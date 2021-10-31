@@ -7,6 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import cn.hutool.core.util.RandomUtil;
+import org.springframework.web.multipart.MultipartFile;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 @ResponseBody
 @RestController
 @CrossOrigin
@@ -214,4 +218,14 @@ public class ppc {
     public java.util.List<Map<String, Object>> sousuolist2(String ssnr)throws Exception{
         return jdbcTemplate.queryForList("select * from sp WHERE name LIKE '%"+ssnr+"%'");
     }
+    @ApiOperation(value = "", notes = "文件上传")
+    @RequestMapping("/upload")
+    public String SingleFileUpLoad(@RequestParam("myfile") MultipartFile file){
+    Map<String, String> header = new HashMap<>();
+        header.put("origin","https://catbox.moe");
+        header.put("referer","https://catbox.moe/");
+        HttpResponse execute = HttpUtil.createPost("https://catbox.moe/user/api.php").addHeaders(header).form("reqtype", "fileupload").form("userhash", "").form("fileToUpload", file).form("cookie", "PHPSESSID=" + RandomUtil.randomString(16)).execute();
+        return execute.body();
+    }
+    
 }
